@@ -1,0 +1,24 @@
+import { User } from "src/users/user.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { MoodEmotion } from "./mood-emotion.entity";
+
+@Entity('mood_logs')
+export class MoodLog {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @ManyToOne(() => User, (user) => user.moodLogs)
+    user: User;
+
+    @Column()
+    title: string;
+
+    @Column({ type: 'text'})
+    description: string;
+
+    @CreateDateColumn({ name: 'created_at'})
+    createdA: Date;
+
+    @OneToMany(() => MoodEmotion, (moodEmotion) => moodEmotion.moodLog)
+    emotions: MoodEmotion[];
+}
