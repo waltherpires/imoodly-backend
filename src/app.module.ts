@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MoodLogsModule } from './mood-logs/mood-logs.module';
 import { AuthModule } from './auth/auth.module';
+import { LinkRequestsModule } from './link-requests/link-requests.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     MoodLogsModule,
-    AuthModule
+    AuthModule,
+    LinkRequestsModule
   ],
   controllers: [AppController],
   providers: [AppService],
