@@ -35,8 +35,4 @@ export class User {
 
   @OneToMany(() => MoodLog, (moodLog) => moodLog.user)
   moodLogs: MoodLog[];
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'psychologist_id' })
-  psychologist: User;
 }

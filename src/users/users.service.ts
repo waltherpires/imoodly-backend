@@ -22,25 +22,6 @@ export class UsersService {
     return this.repo.findOneBy({ id });
   }
 
-  async findPatients(psychologistId: number){
-    const psychologist = await this.findOne(psychologistId);
-
-    if(!psychologist) {
-        throw new NotFoundException('Psicólogo não existe');
-    }
-
-    if(psychologist.role !== UserRole.PSICOLOGO) {
-        throw new BadRequestException("Este usuário não é um psicólogo");
-    }
-
-    const patients = await this.repo
-        .createQueryBuilder("user")
-        .where("user.psychologist_id = :id", { id: psychologistId})
-        .getMany();
-
-    return patients;
-  }
-
   findByEmail(email: string) {
     return this.repo.findOneBy({ email });
   }
