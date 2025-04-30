@@ -33,4 +33,24 @@ export class LinkRequestsService {
       relations: ['requester', 'recipient'],
     });
   }
+
+  async hasAcceptedLinkBetween(userAId: number, userBId: number): Promise<boolean> {
+    const link = await this.repo.findOne({
+      where: [
+        {
+          requester: { id:  userAId },
+          recipient: { id: userBId },
+          status: LinkRequestStatus.ACCEPTED,
+        },
+        {
+          requester: { id: userBId },
+          recipient: { id: userAId },
+          status: LinkRequestStatus.ACCEPTED,
+        },
+      ],
+      relations: ['requester', 'recipient'],
+    });
+
+    return !!link;
+  }
 }
