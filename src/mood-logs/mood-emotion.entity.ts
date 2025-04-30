@@ -9,7 +9,7 @@ export class MoodEmotion {
     id: number;
 
     @ManyToOne(() => MoodLog, (moodLog) => moodLog.emotions)
-    moodLog: MoodLogsModule;
+    moodLog: MoodLog;
 
     @Column({ type: 'enum', enum: Emotion})
     emotion: Emotion;
