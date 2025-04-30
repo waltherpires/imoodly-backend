@@ -7,8 +7,9 @@ import { LinkRequest } from './link-request.entity';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-imports: [AuthModule, TypeOrmModule.forFeature([LinkRequest, User])],
+  imports: [AuthModule, TypeOrmModule.forFeature([LinkRequest, User])],
   controllers: [LinkRequestsController],
-  providers: [LinkRequestsService]
+  providers: [LinkRequestsService],
+  exports: [LinkRequestsService],
 })
 export class LinkRequestsModule {}
