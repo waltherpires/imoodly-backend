@@ -11,5 +11,5 @@ export class MoodLogDto {
     createdAt: Date;
 
     @Expose()
-    tags: string[];
+    emotions: string[];
 }

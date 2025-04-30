@@ -19,6 +19,6 @@ export class MoodLog {
     @CreateDateColumn({ name: 'created_at'})
     createdAt: Date;
 
-    @OneToMany(() => MoodEmotion, (moodEmotion) => moodEmotion.moodLog)
+    @OneToMany(() => MoodEmotion, (moodEmotion) => moodEmotion.moodLog, { cascade: true })
     emotions: MoodEmotion[];
 }
