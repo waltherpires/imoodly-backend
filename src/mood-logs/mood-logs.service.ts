@@ -67,7 +67,8 @@ export class MoodLogsService {
     loggedUser: any,
     targetUserId: number,
   ): Promise<boolean> {
-    if (loggedUser.id === targetUserId) {
+    const targetUserIdNumber = Number(targetUserId);
+    if (loggedUser.id === targetUserIdNumber) {
       return true;
     }
 

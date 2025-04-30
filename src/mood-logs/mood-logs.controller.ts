@@ -1,12 +1,20 @@
-import { Controller, ForbiddenException, Get, Param, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { MoodLogsService } from './mood-logs.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CreateMoodLogDto } from './dto/create-moodlog-dto';
 
+@UseGuards(AuthGuard)
 @Controller('mood-logs')
 export class MoodLogsController {
   constructor(private moodLogsService: MoodLogsService) {}
 
-  @UseGuards(AuthGuard)
+  @Post()
+  async createPost(@Request() req, @Body() body: CreateMoodLogDto) {
+    const loggedUser = req.user;
+
+    return this.moodLogsService.createMoodLog(loggedUser.id, body);
+  }
+
   @Get('user/:userId')
   async getUserMoodLogs(@Param('userId') userId: number, @Request() req) {
     const loggedUser = req.user;
