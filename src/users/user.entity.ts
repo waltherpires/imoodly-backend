@@ -1,31 +1,42 @@
-import { UserRole } from 'src/enums/enums';
+import { UserRole } from 'src/common/enums/enums';
 import { MoodLog } from 'src/mood-logs/mood-log.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({type: 'date'})
-    birthdate: Date;
+  @Column()
+  email: string;
 
-    @Column()
-    username: string;
+  @Column()
+  fullname: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column({ type: 'enum', enum: UserRole})
-    role: UserRole;
+  @Column({ type: 'date' })
+  birthdate: Date;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+  @Column({ type: 'enum', enum: UserRole })
+  role: UserRole;
 
-    @OneToMany(() => MoodLog, (moodLog) => moodLog.user)
-    moodLogs: MoodLog[];
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-    @ManyToOne(() => User, { nullable: true })
-    @JoinColumn({ name: 'psychologist_id'})
-    psychologist: User;
+  @OneToMany(() => MoodLog, (moodLog) => moodLog.user)
+  moodLogs: MoodLog[];
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'psychologist_id' })
+  psychologist: User;
 }

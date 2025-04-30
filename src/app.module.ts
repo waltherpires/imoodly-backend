@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MoodLogsModule } from './mood-logs/mood-logs.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { MoodLogsModule } from './mood-logs/mood-logs.module';
       ssl: { rejectUnauthorized: false},
     }),
     UsersModule,
-    MoodLogsModule
+    MoodLogsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
