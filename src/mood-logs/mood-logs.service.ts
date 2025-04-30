@@ -25,15 +25,20 @@ export class MoodLogsService {
       throw new NotFoundException('Usuário não existe');
     }
 
+    const emotions = createMoodLogDto.emotions.map((emotion) =>
+      this.emotionRepo.create({ emotion })
+    );
+
     const moodLog = this.logRepo.create({
       title: createMoodLogDto.title,
       description: createMoodLogDto.description,
       user,
-    })
+      emotions,
+    });
 
-    const emotions = createMoodLogDto.emotions.map((emotion) =>
-      this.emotionRepo.create({ moodLog, emotion })
-    );
+    await this.logRepo.save(moodLog);
+
+    return plainToInstance(MoodLogDto, moodLog);
   }
 
   async getMoodLogs(userId: number): Promise<MoodLogDto[]> {
