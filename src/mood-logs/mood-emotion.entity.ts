@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { MoodLog } from "./mood-log.entity";
-import { MoodLogsModule } from "./mood-logs.module";
 import { Emotion } from "src/common/enums/enums";
 
 @Entity('mood_emotions')
