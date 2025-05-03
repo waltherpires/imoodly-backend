@@ -8,4 +8,6 @@ export enum Emotion {
   TRISTE = 'triste',
   IRRITADO = 'irritado',
   ANSIOSO = 'ansioso',
+  CALMO = 'calmo',
+  CONFUSO = 'confuso',
 }

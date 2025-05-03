@@ -4,8 +4,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,7 +17,7 @@ export class User {
   email: string;
 
   @Column()
-  fullname: string;
+  name: string;
 
   @Column()
   password: string;

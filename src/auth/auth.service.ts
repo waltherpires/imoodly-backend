@@ -4,6 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ access_token: string, user: Partial<User> }> {
     const user = await this.usersService.findByEmail(email);
     if(!user || !(await bcrypt.compare(pass, user.password))) {
         throw new UnauthorizedException('E-mail ou senha incorretos!');
@@ -23,6 +24,12 @@ export class AuthService {
 
     return {
         access_token: await this.jwtService.signAsync(payload),
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        }
     }
   }
 
