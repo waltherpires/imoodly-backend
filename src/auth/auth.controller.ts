@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { SignInDto } from 'src/auth/dto/signin-dto';
 import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { AuthGuard } from './auth.guard';
-import { Request, Response } from 'express'
 
 @Controller('auth')
 export class AuthController {
