@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Psychologist } from './psychologist.entity';
 
 @Entity('users')
 export class User {
@@ -33,4 +35,7 @@ export class User {
 
   @OneToMany(() => MoodLog, (moodLog) => moodLog.user)
   moodLogs: MoodLog[];
+
+  @OneToOne(() => Psychologist, (psychologist) => psychologist.user, { cascade: true })
+  psychologistProfile: Psychologist;
 }
