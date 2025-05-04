@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { MoodLogsService } from './mood-logs.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateMoodLogDto } from './dto/create-moodlog-dto';
@@ -13,6 +13,11 @@ export class MoodLogsController {
     const loggedUser = req.user;
 
     return this.moodLogsService.createMoodLog(loggedUser.id, body);
+  }
+
+  @Get('monthly-summary/:userId')
+  async getEmotionGraphData(@Param('userId') userId: number) {
+    return await this.moodLogsService.getMonthlyEmotionSummary(userId);
   }
 
   @Get('user/:userId')
