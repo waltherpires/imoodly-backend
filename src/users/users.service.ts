@@ -33,6 +33,13 @@ export class UsersService {
         throw new NotFoundException('usuário não encontrado');
     }
 
+    if (attrs.email) {
+      const existingUser = await this.findByEmail(attrs.email);
+      if (existingUser && existingUser.id !== id) {
+        throw new BadRequestException('E-mail já cadastrado!');
+      }
+    }
+
     Object.assign(user, attrs);
     return this.repo.save(user);
   }

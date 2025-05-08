@@ -8,7 +8,7 @@ export class UserDto {
     email: string;
 
     @Expose()
-    fullname: string;
+    name: string;
 
     @Expose()
     birthdate: Date;
