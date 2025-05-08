@@ -24,8 +24,10 @@ export class AuthController {
     getMe(@Req() req: any) {
         return {
             id: req.user.id,
+            name: req.user.name,
             email: req.user.email,
             role: req.user.role,
+            birthdate: req.user.birthdate,
         }
     }
 }
