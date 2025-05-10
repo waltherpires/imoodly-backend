@@ -95,6 +95,7 @@ export class MoodLogsService {
     const moodLogs = await this.logRepo.find({
       where: { user: { id: userId } },
       relations: ['emotions'],
+      order: { createdAt: 'DESC' },
     });
 
     return moodLogs.map((moodlog) =>
