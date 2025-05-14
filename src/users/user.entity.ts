@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Psychologist } from './psychologist.entity';
+import { Goal } from 'src/goals/goal.entity';
 
 @Entity('users')
 export class User {
@@ -32,6 +33,9 @@ export class User {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+
+  @OneToMany(() => Goal, (goal) => goal.user)
+  goals: Goal[];
 
   @OneToMany(() => MoodLog, (moodLog) => moodLog.user)
   moodLogs: MoodLog[];

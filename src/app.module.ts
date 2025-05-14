@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MoodLogsModule } from './mood-logs/mood-logs.module';
 import { AuthModule } from './auth/auth.module';
 import { LinkRequestsModule } from './link-requests/link-requests.module';
+import { GoalsModule } from './goals/goals.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { LinkRequestsModule } from './link-requests/link-requests.module';
     UsersModule,
     MoodLogsModule,
     AuthModule,
-    LinkRequestsModule
+    LinkRequestsModule,
+    GoalsModule
   ],
   controllers: [AppController],
   providers: [AppService],
