@@ -1,4 +1,4 @@
-import { IsISO8601, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsISO8601, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class CreateGoalDto {
     
@@ -8,11 +8,12 @@ export class CreateGoalDto {
     @IsString()
     description: string;
 
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
+    @IsPositive()
     totalSteps?: number;
 
-    @IsISO8601()
     @IsOptional()
+    @IsISO8601()
     dueDate?: string;
 }

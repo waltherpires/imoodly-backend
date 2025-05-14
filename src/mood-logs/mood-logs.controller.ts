@@ -1,7 +1,7 @@
-import { Body, Controller, ForbiddenException, Get, Param, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { MoodLogsService } from './mood-logs.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { CreateMoodLogDto } from './dto/create-moodlog-dto';
+import { CreateMoodLogDto } from './dto/create-moodlog.dto';
 
 @UseGuards(AuthGuard)
 @Controller('mood-logs')

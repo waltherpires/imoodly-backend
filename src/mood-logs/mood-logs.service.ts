@@ -2,11 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoodLog } from './mood-log.entity';
 import { Repository } from 'typeorm';
-import { MoodLogDto } from './dto/moodlog-dto';
+import { MoodLogDto } from './dto/moodlog.dto';
 import { plainToInstance } from 'class-transformer';
 import { UsersService } from 'src/users/users.service';
 import { LinkRequestsService } from 'src/link-requests/link-requests.service';
-import { CreateMoodLogDto } from './dto/create-moodlog-dto';
+import { CreateMoodLogDto } from './dto/create-moodlog.dto';
 import { MoodEmotion } from './mood-emotion.entity';
 import { Emotion } from 'src/common/enums/enums';
 @Injectable()
