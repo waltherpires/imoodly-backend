@@ -1,7 +1,14 @@
 import { User } from 'src/users/user.entity';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-Entity('goals')
+
+export enum GoalStatus {
+    PENDING = 'pending',
+    COMPLETED = 'completed',
+    IN_PROGRESS = 'in_progress',
+}
+
+@Entity('goals')
 export class Goal {
     @PrimaryGeneratedColumn()
     id: number;
@@ -15,10 +22,10 @@ export class Goal {
     @Column({ type: 'text' , nullable: true })
     description: string;
 
-    @Column({ default: 'pending'})
-    status: 'pending' | 'completed' | 'in-progress';
+    @Column({ type: 'enum', enum: GoalStatus, default: GoalStatus.PENDING })
+    status: GoalStatus;
 
-    @Column({ nullable: true })
+    @Column()
     totalSteps: number;
     
     @Column({ default: 0 })
