@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { UserDto } from 'src/users/dto/user.dto';
 
 export class GoalResponseDto {
   @Expose()
@@ -29,7 +30,5 @@ export class GoalResponseDto {
   dueDate: Date;
 
   @Expose()
-  user: {
-    id: number;
-  };
+  user: UserDto;
 }

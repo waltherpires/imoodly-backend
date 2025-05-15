@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Goal, GoalStatus } from './goal.entity';
-import { DeepPartial, Not, Repository } from 'typeorm';
+import { Between, DeepPartial, In, Not, Repository } from 'typeorm';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { UsersService } from 'src/users/users.service';
+import { GetGoalsQueryDto } from './dto/get-goals-query.dto';
 
 @Injectable()
 export class GoalsService {
@@ -39,29 +40,68 @@ export class GoalsService {
     return newGoal;
   }
 
-  async getGoals(userId: number, status?: GoalStatus) {
+  async getGoals(userId: number, query: GetGoalsQueryDto) {
+    const { status, month, year } = query;
     const user = await this.userService.findOne(userId);
 
     if (!user) {
       throw new NotFoundException('Usuário não encotrado!');
     }
 
-    const validStatus = Object.values(GoalStatus);
-
-    if (status && !validStatus.includes(status)) {
-        throw new BadRequestException('Status inválido!')
+    const whereClause: any = { user: { id: userId} };
+    if (status && status.length) {
+        whereClause.status = In(status);
     }
 
-    const whereClause: any = { user: { id: userId} };
+    if (month && year) {
+      const startDate = new Date(year, month -1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
-    if (status) {
-        whereClause.status = status;
+      whereClause.createdAt = Between(startDate, endDate);
     }
 
     return this.goalRepository.find({
       where: whereClause,
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async getGoalsSummary(userId: number, query: GetGoalsQueryDto) {
+    const { month, year } = query;
+    const user = await this.userService.findOne(userId);
+
+    if(!user) {
+      throw new NotFoundException("Usuário não encontrado.");
+    }
+
+    const whereClause: any = { user: { id: userId }};
+
+    if (month && year) {
+      const startDate = new Date(year, month -1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+      whereClause.createdAt = Between(startDate, endDate);
+    }
+    const totalGoals = await this.goalRepository.count({ where: whereClause, relations: ['user'] });
+
+    const completedGoals = await this.goalRepository.count({
+        where: { ...whereClause, status: GoalStatus.COMPLETED },
+        relations: ['user']
+    })
+
+    return { totalGoals, completedGoals };
+  }
+
+  async completeGoal(goalId: number) {
+    const goal = await this.getGoalById(goalId);
+
+    if (goal.totalSteps !== goal.currentStep) {
+      throw new BadRequestException("Não é possível completar a tarefa.")
+    }
+
+    goal.status = GoalStatus.COMPLETED;
+
+    return this.goalRepository.save(goal);
   }
 
   async changeProgress(goalId: number, quantity: number = 1) {
@@ -75,7 +115,6 @@ export class GoalsService {
 
     if (goal.totalSteps && goal.currentStep > goal.totalSteps) {
         goal.currentStep = goal.totalSteps;
-        goal.status = GoalStatus.COMPLETED;
     } else if (goal.currentStep === 0) {
         goal.status = GoalStatus.PENDING;
     } else {
