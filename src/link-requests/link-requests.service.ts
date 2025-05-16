@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LinkRequest, LinkRequestStatus } from './link-request.entity';
 import { Repository } from 'typeorm';
@@ -18,10 +18,22 @@ export class LinkRequestsService {
     return this.repo.save(request);
   }
 
-  async acceptRequest(requestId: number) {
+  async acceptRequest(requestId: number, recipientId: number) {
     const request = await this.repo.findOneByOrFail({ id: requestId });
+
+    if (request.recipient.id !== recipientId) {
+      throw new ForbiddenException("Você não tem permissão para aceitar essa solicitação.");
+    }
+
     request.status = LinkRequestStatus.ACCEPTED;
     return this.repo.save(request);
+  }
+
+  async getReceiveRequests(recipientId: number) {
+    return this.repo.find({
+      where: { recipient: { id: recipientId } },
+      relations: ['requester'],
+    });
   }
 
   async getLinks(userId: number) {
