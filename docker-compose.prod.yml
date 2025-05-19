@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  backend:
+    build: .
+    container_name: imoodly_backend_prod
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - '3001:3001'
+    command: npm run start:prod
+    networks:
+      - imoodly_network
+
+networks:
+  imoodly_network:

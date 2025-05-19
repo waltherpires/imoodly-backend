@@ -8,18 +8,16 @@ import { MoodLogsModule } from './mood-logs/mood-logs.module';
 import { AuthModule } from './auth/auth.module';
 import { LinkRequestsModule } from './link-requests/link-requests.module';
 import { GoalsModule } from './goals/goals.module';
+import { TypeOrmConfigService } from './config/typeorm.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.development.local', '.env.development.docker', '.env.production', '.env.test']
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      ssl: { rejectUnauthorized: false},
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
     }),
     UsersModule,
     MoodLogsModule,
