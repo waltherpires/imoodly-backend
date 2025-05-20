@@ -10,6 +10,11 @@ export class LinkRequestsService {
   ) {}
 
   async createRequest(requesterId: number, recipientId: number) {
+    const alreadyExists = await this.hasPendingRequestBetween(requesterId, recipientId);
+    if (alreadyExists) {
+      throw new ForbiddenException('Já existe uma solicitação pendente entre vocês.');
+    }
+
     const request = this.repo.create({
       requester: { id: requesterId },
       recipient: { id: recipientId },
@@ -64,5 +69,25 @@ export class LinkRequestsService {
     });
 
     return !!link;
+  }
+
+  async hasPendingRequestBetween(requesterId: number, recipientId: number): Promise<boolean> {
+    const existingRequest = await this.repo.findOne({
+      where: [
+        {
+          requester: { id: requesterId },
+          recipient: { id: recipientId },
+          status: LinkRequestStatus.PENDING,
+        },
+        {
+          requester: { id: recipientId },
+          recipient: { id: requesterId },
+          status: LinkRequestStatus.PENDING,
+        },
+      ],
+      relations: ['requester', 'recipient'],
+    });
+
+    return !!existingRequest;
   }
 }

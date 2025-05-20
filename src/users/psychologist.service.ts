@@ -3,10 +3,12 @@ import { ConnectionStatus, Psychologist } from './psychologist.entity';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { NotFoundException } from '@nestjs/common';
+import { LinkRequestsService } from 'src/link-requests/link-requests.service';
 
 export class PsychologistService {
   constructor(
     @InjectRepository(Psychologist) private repo: Repository<Psychologist>,
+    private linkRequestService: LinkRequestsService,
   ) {}
 
   create(crp: string, user: User) {
@@ -14,13 +16,28 @@ export class PsychologistService {
     return this.repo.save(profile);
   }
 
-  async getAvailablePsychologists() {
+  async getAvailablePsychologistsWithStatusForPatient(patientId: number) {
     const openPsychologists = await this.repo.find({
       where: { connectionStatus: ConnectionStatus.OPEN },
       relations: ['user'],
     });
 
-    return openPsychologists;
+    const activeLink = await this.linkRequestService.getLinks(patientId)
+
+    const pendingRequests = await Promise.all(
+      openPsychologists.map(async (psychologist) => {
+        const hasPending = await this.linkRequestService.hasPendingRequestBetween(patientId, psychologist.user.id);
+        return { psychologist, hasPendingRequest: hasPending,};
+      }),
+    );
+
+    const result = pendingRequests.map((item) => ({
+      ...item.psychologist,
+      hasPendingRequest: item.hasPendingRequest,
+      hasActiveLink: activeLink.length > 0,
+    }));
+
+    return result;
   }
 
   async changeConnectionVisibility(userId: number) {

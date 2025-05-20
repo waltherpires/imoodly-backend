@@ -14,4 +14,10 @@ export class PsychologistDto {
     @Expose()
     @Type(() => UserDto)
     user: UserDto;
+
+    @Expose()
+    hasPendingRequest: boolean;
+
+    @Expose()
+    hasActiveLink: boolean;
 }

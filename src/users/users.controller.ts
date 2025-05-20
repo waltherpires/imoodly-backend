@@ -53,8 +53,9 @@ export class UsersController {
   @Get('psychologists')
   @UseGuards(AuthGuard)
   @Serialize(PsychologistDto)
-  async getPsychologistsList() {
-    const list = await this.psychologistsService.getAvailablePsychologists();
+  async getPsychologistsList(@Req() req) {
+    const patientId = req.user.id;
+    const list = await this.psychologistsService.getAvailablePsychologistsWithStatusForPatient(patientId);
 
     return list;
   }
