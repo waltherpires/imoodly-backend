@@ -14,7 +14,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=development TZ=UTC nest start",
     "start:dev": "cross-env NODE_ENV=development TZ=UTC nest start --watch",
-    "local": "cross-env NODE_ENV=local TZ=UTC nest start --watch",
+    "dev": "cross-env NODE_ENV=local TZ=UTC nest start --watch",
     "docker": "docker compose up --build",
     "prod": "docker compose -f docker-compose.prod.yml up --build",
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",
