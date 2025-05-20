@@ -3,6 +3,8 @@ version: '3.9'
 services:
   backend:
     build: .
+    dns:
+      - 8.8.8.8
     container_name: imoodly_backend_prod
     restart: always
     env_file:
