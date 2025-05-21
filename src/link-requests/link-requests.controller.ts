@@ -17,7 +17,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/enums';
 import { LinkRequestStatus } from './link-request.entity';
 import { Serialize } from 'src/common/interceptors/serialize.interceptor';
-import { UserDto } from 'src/users/dto/user.dto';
 import { LinkRequestDto } from './dto/link-request.dto';
 interface JwtPayload {
   sub: number;
