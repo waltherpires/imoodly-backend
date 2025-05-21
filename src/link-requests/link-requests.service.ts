@@ -10,9 +10,14 @@ export class LinkRequestsService {
   ) {}
 
   async createRequest(requesterId: number, recipientId: number) {
-    const alreadyExists = await this.hasPendingRequestBetween(requesterId, recipientId);
+    const alreadyExists = await this.hasPendingRequestBetween(
+      requesterId,
+      recipientId,
+    );
     if (alreadyExists) {
-      throw new ForbiddenException('Já existe uma solicitação pendente entre vocês.');
+      throw new ForbiddenException(
+        'Já existe uma solicitação pendente entre vocês.',
+      );
     }
 
     const request = this.repo.create({
@@ -23,20 +28,29 @@ export class LinkRequestsService {
     return this.repo.save(request);
   }
 
-  async acceptRequest(requestId: number, recipientId: number) {
-    const request = await this.repo.findOneByOrFail({ id: requestId });
+  async updateRequestStatus(
+    requestId: number,
+    recipientId: number,
+    status: LinkRequestStatus,
+  ) {
+    const request = await this.repo.findOneOrFail({
+      where: { id: requestId },
+      relations: ['recipient'],
+    });
 
     if (request.recipient.id !== recipientId) {
-      throw new ForbiddenException("Você não tem permissão para aceitar essa solicitação.");
+      throw new ForbiddenException(
+        'Você não tem permissão para aceitar essa solicitação.',
+      );
     }
 
-    request.status = LinkRequestStatus.ACCEPTED;
+    request.status = status;
     return this.repo.save(request);
   }
 
   async getReceiveRequests(recipientId: number) {
     return this.repo.find({
-      where: { recipient: { id: recipientId } },
+      where: { recipient: { id: recipientId }, status: LinkRequestStatus.PENDING },
       relations: ['requester'],
     });
   }
@@ -51,11 +65,14 @@ export class LinkRequestsService {
     });
   }
 
-  async hasAcceptedLinkBetween(userAId: number, userBId: number): Promise<boolean> {
+  async hasAcceptedLinkBetween(
+    userAId: number,
+    userBId: number,
+  ): Promise<boolean> {
     const link = await this.repo.findOne({
       where: [
         {
-          requester: { id:  userAId },
+          requester: { id: userAId },
           recipient: { id: userBId },
           status: LinkRequestStatus.ACCEPTED,
         },
@@ -71,7 +88,10 @@ export class LinkRequestsService {
     return !!link;
   }
 
-  async hasPendingRequestBetween(requesterId: number, recipientId: number): Promise<boolean> {
+  async hasPendingRequestBetween(
+    requesterId: number,
+    recipientId: number,
+  ): Promise<boolean> {
     const existingRequest = await this.repo.findOne({
       where: [
         {
