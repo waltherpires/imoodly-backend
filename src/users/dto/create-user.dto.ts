@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsEmail, IsEnum, IsString, IsOptional, IsISO8601 } from "class-validator";
+import { IsEmail, IsEnum, IsString, IsOptional, IsISO8601, IsDate, MinDate, MaxDate } from "class-validator";
 import { UserRole } from "src/common/enums/enums";
 
 export class CreateUserDto {
@@ -12,8 +12,11 @@ export class CreateUserDto {
     @IsString()
     password: string;
 
-    @IsISO8601()
-    birthdate: string;
+    @Type(() => Date)
+    @IsDate()
+    @MinDate(new Date("1910-01-01"))
+    @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 18)))
+    birthdate: Date;
 
     @IsEnum(UserRole)
     role: UserRole;
