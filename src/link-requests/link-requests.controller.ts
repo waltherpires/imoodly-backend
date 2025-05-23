@@ -32,7 +32,16 @@ export class LinkRequestsController {
   @Get('my-patients')
   findMyPatients(@Req() req: { user: JwtPayload }) {
     const psychologistId = req.user.sub;
-    return this.linkRequestsService.getLinks(psychologistId);
+    return this.linkRequestsService.getPsychologistLinks(psychologistId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.PACIENTE)
+  @Serialize(LinkRequestDto)
+  @Get('my-psychologist')
+  findMyPsychologist(@Req() req) {
+    const userId = req.user.id;
+    return this.linkRequestsService.getPatientLink(userId);
   }
 
   @UseGuards(AuthGuard)

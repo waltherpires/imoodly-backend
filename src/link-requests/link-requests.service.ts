@@ -50,16 +50,37 @@ export class LinkRequestsService {
 
   async getReceiveRequests(recipientId: number) {
     return this.repo.find({
-      where: { recipient: { id: recipientId }, status: LinkRequestStatus.PENDING },
+      where: {
+        recipient: { id: recipientId },
+        status: LinkRequestStatus.PENDING,
+      },
       relations: ['requester'],
+    });
+  }
+
+  async getPsychologistLinks(userId: number) {
+    return this.repo.find({
+      where: [
+        { recipient: { id: userId }, status: LinkRequestStatus.ACCEPTED },
+      ],
+      relations: ['requester', 'recipient'],
     });
   }
 
   async getLinks(userId: number) {
     return this.repo.find({
       where: [
-        { requester: { id: userId }, status: LinkRequestStatus.ACCEPTED },
         { recipient: { id: userId }, status: LinkRequestStatus.ACCEPTED },
+        { requester: { id: userId }, status: LinkRequestStatus.ACCEPTED },
+      ],
+      relations: ['requester', 'recipient'],
+    });
+  }
+
+  async getPatientLink(userId: number) {
+    return this.repo.find({
+      where: [
+        { requester: { id: userId }, status: LinkRequestStatus.ACCEPTED },
       ],
       relations: ['requester', 'recipient'],
     });
