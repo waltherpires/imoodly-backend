@@ -86,6 +86,17 @@ export class LinkRequestsService {
     });
   }
 
+  async getPsychologistLinkedToUser(userId: number): Promise<number[]> {
+    const links = await this.getLinks(userId);
+
+    return links
+      .map(link =>
+        link.requester.id !== userId ? link.requester : link.recipient
+      )
+      .filter(user => user.role === 'psicologo')
+      .map(user => user.id);
+  }
+
   async hasAcceptedLinkBetween(
     userAId: number,
     userBId: number,
