@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { LinkRequestsModule } from './link-requests/link-requests.module';
 import { GoalsModule } from './goals/goals.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { TypeOrmConfigService } from './config/typeorm.config';
     MoodLogsModule,
     AuthModule,
     LinkRequestsModule,
-    GoalsModule
+    GoalsModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
