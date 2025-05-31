@@ -17,6 +17,8 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { PsychologistService } from './psychologist.service';
 import { PsychologistDto } from './dto/psychologist.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/enums';
 
 @Controller('users')
 export class UsersController {
@@ -55,12 +57,15 @@ export class UsersController {
   @Serialize(PsychologistDto)
   async getPsychologistsList(@Req() req) {
     const patientId = req.user.id;
-    const list = await this.psychologistsService.getAvailablePsychologistsWithStatusForPatient(patientId);
+    const list =
+      await this.psychologistsService.getAvailablePsychologistsWithStatusForPatient(
+        patientId,
+      );
 
     return list;
   }
 
-  @Post('psychologist/change-visibility')
+  @Patch('psychologist/change-visibility')
   @UseGuards(AuthGuard)
   @Serialize(PsychologistDto)
   async toggleConnectionVisibility(@Req() request) {
@@ -68,5 +73,19 @@ export class UsersController {
     const updatedPsychologist =
       await this.psychologistsService.changeConnectionVisibility(userId);
     return updatedPsychologist;
+  }
+
+  @Get('me/psychologist')
+  @Roles(UserRole.PSICOLOGO)
+  @UseGuards(AuthGuard)
+  @Serialize(PsychologistDto)
+  async getLoggedPsychologist(@Req() req) {
+    const userId = req.user.id;
+    const psychologist = await this.psychologistsService.get(userId);
+    if (!psychologist) {
+      throw new UnauthorizedException('Usuário não é um psicólogo.');
+    }
+
+    return psychologist;
   }
 }
