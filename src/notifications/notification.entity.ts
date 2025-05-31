@@ -4,6 +4,8 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGenerated
 export enum NotificationType {
     GOAL="goal",
     POST="post",
+    LINK_REQUEST = "link_request",
+    LINK_ACCEPTED = "link_accepted",
 }
 
 @Entity('notifications')
@@ -21,8 +23,11 @@ export class Notification {
     @ManyToOne(() => User)
     receiver: User;
 
-    @Column()
+    @Column({ nullable: true })
     resourceId: number;
+
+    @Column({ type: 'json', nullable: true })
+    data: any;
 
     @Column({ default: false })
     isRead: boolean;

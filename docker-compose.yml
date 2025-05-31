@@ -16,7 +16,9 @@ services:
       - imoodly_network
 
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: imoodly_backend
     restart: always
     depends_on:
@@ -25,6 +27,9 @@ services:
       - .env.development.docker
     ports:
       - '3001:3001'
+    volumes:
+      - .:/app
+      - /app/node_modules
     command: npm run start:dev
     networks:
       - imoodly_network

@@ -1,9 +1,10 @@
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import { NotificationType } from "../notification.entity";
 
 export class CreateNotificationDto {
 
-    @IsEnum(['goal', 'post'])
-  type: 'goal' | 'post';
+  @IsEnum(NotificationType)
+  type: NotificationType;
 
   @IsString()
   senderId: string;
@@ -11,6 +12,10 @@ export class CreateNotificationDto {
   @IsString()
   receiverId: string;
   
+  @IsOptional()
   @IsString()
-  resourceId: string;
+  resourceId?: string;
+
+  @IsOptional()
+  data?: any;
 }

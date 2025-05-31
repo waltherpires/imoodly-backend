@@ -2,11 +2,14 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LinkRequest, LinkRequestStatus } from './link-request.entity';
 import { Repository } from 'typeorm';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationType } from 'src/notifications/notification.entity';
 
 @Injectable()
 export class LinkRequestsService {
   constructor(
     @InjectRepository(LinkRequest) private repo: Repository<LinkRequest>,
+    private notificationService: NotificationsService,
   ) {}
 
   async createRequest(requesterId: number, recipientId: number) {
@@ -25,7 +28,17 @@ export class LinkRequestsService {
       recipient: { id: recipientId },
     });
 
-    return this.repo.save(request);
+    const savedRequest = await this.repo.save(request);
+
+    await this.notificationService.createNotification({
+      type: NotificationType.LINK_REQUEST,
+      senderId: String(requesterId),
+      receiverId: String(recipientId),
+      resourceId: String(savedRequest.id),
+      data: { message: `Solicitação de acompanhamento de ${request.requester.name}` }
+    });
+
+    return savedRequest;
   }
 
   async updateRequestStatus(
@@ -45,7 +58,17 @@ export class LinkRequestsService {
     }
 
     request.status = status;
-    return this.repo.save(request);
+    const updatedRequest = await this.repo.save(request);
+
+    if(status === LinkRequestStatus.ACCEPTED) {
+      await this.notificationService.createNotification({
+        type: NotificationType.LINK_ACCEPTED,
+        senderId: String(recipientId),
+        receiverId: String(request.requester.id),
+        resourceId: String(request.id),
+        data: { message: 'Seu pedido de vínculo foi aceito,' }
+      });
+    }
   }
 
   async getReceiveRequests(recipientId: number) {
