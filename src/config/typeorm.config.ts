@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         url: this.configService.get<string>('DATABASE_URL'),
         ssl: { rejectUnauthorized: false },
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true,
       };
     } else if (env === 'local') {
       return {
