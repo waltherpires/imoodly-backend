@@ -6,9 +6,14 @@ import { User } from 'src/users/user.entity';
 import { LinkRequest } from './link-request.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { IsPsychologistOfGuard } from './is-psychologist-of.guard';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([LinkRequest, User])],
+  imports: [
+    AuthModule,
+    NotificationsModule,
+    TypeOrmModule.forFeature([LinkRequest, User]),
+  ],
   controllers: [LinkRequestsController],
   providers: [LinkRequestsService, IsPsychologistOfGuard],
   exports: [LinkRequestsService, IsPsychologistOfGuard],

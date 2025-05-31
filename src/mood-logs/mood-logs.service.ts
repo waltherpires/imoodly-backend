@@ -9,13 +9,17 @@ import { LinkRequestsService } from 'src/link-requests/link-requests.service';
 import { CreateMoodLogDto } from './dto/create-moodlog.dto';
 import { MoodEmotion } from './mood-emotion.entity';
 import { Emotion } from 'src/common/enums/enums';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationType } from 'src/notifications/notification.entity';
 @Injectable()
 export class MoodLogsService {
   constructor(
     @InjectRepository(MoodLog) private logRepo: Repository<MoodLog>,
-    @InjectRepository(MoodEmotion) private readonly emotionRepo: Repository<MoodEmotion>,
+    @InjectRepository(MoodEmotion)
+    private readonly emotionRepo: Repository<MoodEmotion>,
     private userService: UsersService,
     private linkService: LinkRequestsService,
+    private notificationService: NotificationsService,
   ) {}
 
   async getMonthlyEmotionSummary(userId: number) {
@@ -48,18 +52,18 @@ export class MoodLogsService {
       .orderBy('year, month')
       .getRawMany();
 
-      return data.map(item => ({
-        year: item.year,
-        month: item.month,
-        emotions: {
-          [Emotion.FELIZ]: item.feliz,
-          [Emotion.TRISTE]: item.triste,
-          [Emotion.IRRITADO]: item.irritado,
-          [Emotion.ANSIOSO]: item.ansioso,
-          [Emotion.CALMO]: item.calmo,
-          [Emotion.CONFUSO]: item.confuso,
-        }
-      }));
+    return data.map((item) => ({
+      year: item.year,
+      month: item.month,
+      emotions: {
+        [Emotion.FELIZ]: item.feliz,
+        [Emotion.TRISTE]: item.triste,
+        [Emotion.IRRITADO]: item.irritado,
+        [Emotion.ANSIOSO]: item.ansioso,
+        [Emotion.CALMO]: item.calmo,
+        [Emotion.CONFUSO]: item.confuso,
+      },
+    }));
   }
 
   async createMoodLog(userId: number, createMoodLogDto: CreateMoodLogDto) {
@@ -70,7 +74,7 @@ export class MoodLogsService {
     }
 
     const emotions = createMoodLogDto.emotions.map((emotion) =>
-      this.emotionRepo.create({ emotion })
+      this.emotionRepo.create({ emotion }),
     );
 
     const moodLog = this.logRepo.create({
@@ -81,6 +85,18 @@ export class MoodLogsService {
     });
 
     await this.logRepo.save(moodLog);
+
+    const linkedPsychologists =
+      await this.linkService.getPsychologistLinkedToUser(userId);
+
+    for (const psychologistId of linkedPsychologists) {
+      await this.notificationService.createNotification({
+        type: NotificationType.POST,
+        senderId: String(userId),
+        receiverId: String(psychologistId),
+        resourceId: String(moodLog.id),
+      });
+    }
 
     return plainToInstance(MoodLogDto, moodLog);
   }

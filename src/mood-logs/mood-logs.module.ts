@@ -7,9 +7,11 @@ import { MoodEmotion } from './mood-emotion.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { LinkRequestsModule } from 'src/link-requests/link-requests.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
+    NotificationsModule,
     AuthModule,
     TypeOrmModule.forFeature([MoodLog, MoodEmotion]),
     UsersModule,
