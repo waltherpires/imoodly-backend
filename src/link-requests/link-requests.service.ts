@@ -60,6 +60,17 @@ export class LinkRequestsService {
     request.status = status;
     const updatedRequest = await this.repo.save(request);
 
+    const notifications = await this.notificationService.getUserNotifications(
+      recipientId,
+      NotificationType.LINK_REQUEST,
+      false
+    );
+
+    const notification = notifications.find(n => n.resourceId === requestId);
+    if (notification) {
+      await this.notificationService.markAsRead(notification.id);
+    }
+
     if(status === LinkRequestStatus.ACCEPTED) {
       await this.notificationService.createNotification({
         type: NotificationType.LINK_ACCEPTED,
