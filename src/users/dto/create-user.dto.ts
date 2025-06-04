@@ -1,27 +1,40 @@
-import { Type } from "class-transformer";
-import { IsEmail, IsEnum, IsString, IsOptional, IsISO8601, IsDate, MinDate, MaxDate } from "class-validator";
-import { UserRole } from "src/common/enums/enums";
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsEnum,
+  IsString,
+  IsOptional,
+  IsISO8601,
+  IsDate,
+  MinDate,
+  MaxDate,
+  Matches,
+} from 'class-validator';
+import { UserRole } from 'src/common/enums/enums';
 
 export class CreateUserDto {
-    @IsEmail()
-    email: string
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    name: string;
+  @IsString()
+  @Matches(/^[\p{L}\p{N} '@\/#!$%&*,\-]*$/u, {
+    message: 'Senha contém caracteres inválidos',
+  })
+  name: string;
 
-    @IsString()
-    password: string;
+  @IsString()
+  password: string;
 
-    @Type(() => Date)
-    @IsDate()
-    @MinDate(new Date("1910-01-01"))
-    @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 18)))
-    birthdate: Date;
+  @Type(() => Date)
+  @IsDate()
+  @MinDate(new Date('1910-01-01'))
+  @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 18)))
+  birthdate: Date;
 
-    @IsEnum(UserRole)
-    role: UserRole;
+  @IsEnum(UserRole)
+  role: UserRole;
 
-    @IsOptional()
-    @IsString()
-    crp?: string;
+  @IsOptional()
+  @IsString()
+  crp?: string;
 }
