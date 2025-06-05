@@ -1,4 +1,17 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Req, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { GoalsService } from './goals.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateGoalDto } from './dto/create-goal.dto';
@@ -10,41 +23,57 @@ import { GoalResponseDto } from './dto/goal-response.dto';
 @UseGuards(AuthGuard)
 @Controller('goals')
 export class GoalsController {
-    constructor(private goalsService: GoalsService) {}
+  constructor(private goalsService: GoalsService) {}
 
-    @Serialize(GoalResponseDto)
-    @Post()
-    async createGoal(@Request() req, @Body() body: CreateGoalDto) {
-        const userId = req.user.id;
+  @Serialize(GoalResponseDto)
+  @Post()
+  async createGoal(@Request() req, @Body() body: CreateGoalDto) {
+    const userId = req.user.id;
 
-        return this.goalsService.createGoal(body, userId);
+    return this.goalsService.createGoal(body, userId);
+  }
+
+  @Serialize(GoalResponseDto)
+  @Get()
+  getGoals(@Query() query: GetGoalsQueryDto, @Request() req) {
+    const userId = req.user.id;
+
+    return this.goalsService.getGoals(userId, query);
+  }
+
+  @Get('summary/:userId')
+  async getGoalsSummary(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Query() query: GetGoalsQueryDto,
+    @Request() req,
+  ) {
+    const loggedUser = req.user;
+
+    const canAccess = await this.goalsService.canAccessGoals(
+      loggedUser,
+      userId,
+    );
+    if (!canAccess) {
+      throw new ForbiddenException(
+        'Você não tem permissão para acessar esses dados.',
+      );
     }
 
-    @Serialize(GoalResponseDto)
-    @Get()
-    getGoals(@Query() query: GetGoalsQueryDto, @Request() req) {
-        const userId = req.user.id;
+    return this.goalsService.getGoalsSummary(userId, query);
+  }
 
-        return this.goalsService.getGoals(userId, query);
-    }
+  @Serialize(GoalResponseDto)
+  @Patch(':id/progress')
+  updateProgress(
+    @Param('id', ParseIntPipe) goalId: number,
+    @Body() body: ChangeProgressDto,
+  ) {
+    return this.goalsService.changeProgress(goalId, body.quantity);
+  }
 
-    @Get('summary')
-    getGoalsSummary(@Query() query: GetGoalsQueryDto, @Request() req){
-        const userId = req.user.id;
-        return this.goalsService.getGoalsSummary(userId, query);
-    }
-
-
-    @Serialize(GoalResponseDto)    
-    @Patch(':id/progress')
-    updateProgress(@Param('id', ParseIntPipe) goalId: number, @Body() body: ChangeProgressDto ) {
-        return this.goalsService.changeProgress(goalId, body.quantity);
-    }
-
-
-    @Serialize(GoalResponseDto)
-    @Patch(':id/complete')
-    completeGoal(@Param('id', ParseIntPipe) goalId: number) {
-        return this.goalsService.completeGoal(goalId);
-    }
+  @Serialize(GoalResponseDto)
+  @Patch(':id/complete')
+  completeGoal(@Param('id', ParseIntPipe) goalId: number) {
+    return this.goalsService.completeGoal(goalId);
+  }
 }

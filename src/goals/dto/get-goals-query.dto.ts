@@ -3,6 +3,8 @@ import { GoalStatus } from "../goal.entity";
 import { Type } from "class-transformer";
 
 export class GetGoalsQueryDto {
+
+    
     @IsOptional()
     @IsEnum(GoalStatus, { each: true, message: 'Status inválido!' })
     @IsArray()

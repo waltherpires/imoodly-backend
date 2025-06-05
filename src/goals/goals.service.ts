@@ -159,4 +159,21 @@ export class GoalsService {
 
     return goal;
   }
+
+  async canAccessGoals(
+    loggedUser: any,
+    targetUserId: number,
+  ): Promise<boolean> {
+    if (loggedUser.id === targetUserId) return true;
+
+    if (loggedUser.role === 'psicologo') {
+      const hasLink = await this.linkService.hasAcceptedLinkBetween(
+        loggedUser.id,
+        targetUserId,
+      );
+      if (hasLink) return true;
+    }
+
+    return false;
+  }
 }
