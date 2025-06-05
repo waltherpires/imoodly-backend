@@ -48,7 +48,7 @@ export class LinkRequestsService {
   ) {
     const request = await this.repo.findOneOrFail({
       where: { id: requestId },
-      relations: ['recipient'],
+      relations: ['recipient', 'requester'],
     });
 
     if (request.recipient.id !== recipientId) {
