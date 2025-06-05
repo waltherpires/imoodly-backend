@@ -13,6 +13,8 @@ import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { NotificationType } from './notification.entity';
+import { Serialize } from 'src/common/interceptors/serialize.interceptor';
+import { NotificationResponseDto } from './dto/notification-response.dto';
 
 @Controller('notifications')
 @UseGuards(AuthGuard)
@@ -31,6 +33,7 @@ export class NotificationsController {
     });
   }
 
+  @Serialize(NotificationResponseDto)
   @Get()
   async getUserNotifications(
     @Req() req: any,
