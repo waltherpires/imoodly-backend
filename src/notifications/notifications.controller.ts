@@ -22,6 +22,7 @@ export class NotificationsController {
   constructor(private readonly notificationService: NotificationsService) {}
 
   @Post()
+  @Serialize(NotificationResponseDto)
   async createNotification(
     @Body() body: CreateNotificationDto,
     @Req() req: any,
@@ -50,6 +51,7 @@ export class NotificationsController {
   }
 
   @Patch(':id/read')
+  @Serialize(NotificationResponseDto)
   async markAsRead(@Param('id') id: string) {
     return this.notificationService.markAsRead(Number(id));
   }
