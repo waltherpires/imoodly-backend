@@ -23,6 +23,11 @@ export class LinkRequestsService {
       );
     }
 
+    const alreadyLinked = await this.getLinks(requesterId);
+    if (alreadyLinked) {
+      throw new ForbiddenException('Você já possui acompanhamento');
+    }
+
     const request = this.repo.create({
       requester: { id: requesterId },
       recipient: { id: recipientId },
@@ -35,7 +40,9 @@ export class LinkRequestsService {
       senderId: String(requesterId),
       receiverId: String(recipientId),
       resourceId: String(savedRequest.id),
-      data: { message: `Solicitação de acompanhamento de ${request.requester.name}` }
+      data: {
+        message: `Solicitação de acompanhamento de ${request.requester.name}`,
+      },
     });
 
     return savedRequest;
@@ -63,21 +70,21 @@ export class LinkRequestsService {
     const notifications = await this.notificationService.getUserNotifications(
       recipientId,
       NotificationType.LINK_REQUEST,
-      false
+      false,
     );
 
-    const notification = notifications.find(n => n.resourceId === requestId);
+    const notification = notifications.find((n) => n.resourceId === requestId);
     if (notification) {
       await this.notificationService.markAsRead(notification.id);
     }
 
-    if(status === LinkRequestStatus.ACCEPTED) {
+    if (status === LinkRequestStatus.ACCEPTED) {
       await this.notificationService.createNotification({
         type: NotificationType.LINK_ACCEPTED,
         senderId: String(recipientId),
         receiverId: String(request.requester.id),
         resourceId: String(request.id),
-        data: { message: 'Seu pedido de vínculo foi aceito,' }
+        data: { message: 'Seu pedido de vínculo foi aceito,' },
       });
     }
   }
@@ -124,11 +131,11 @@ export class LinkRequestsService {
     const links = await this.getLinks(userId);
 
     return links
-      .map(link =>
-        link.requester.id !== userId ? link.requester : link.recipient
+      .map((link) =>
+        link.requester.id !== userId ? link.requester : link.recipient,
       )
-      .filter(user => user.role === 'psicologo')
-      .map(user => user.id);
+      .filter((user) => user.role === 'psicologo')
+      .map((user) => user.id);
   }
 
   async hasAcceptedLinkBetween(
