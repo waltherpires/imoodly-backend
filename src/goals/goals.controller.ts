@@ -19,6 +19,7 @@ import { GetGoalsQueryDto } from './dto/get-goals-query.dto';
 import { ChangeProgressDto } from './dto/change-progress.dto';
 import { Serialize } from 'src/common/interceptors/serialize.interceptor';
 import { GoalResponseDto } from './dto/goal-response.dto';
+import { UserRole } from 'src/common/enums/enums';
 
 @UseGuards(AuthGuard)
 @Controller('goals')
@@ -35,10 +36,28 @@ export class GoalsController {
 
   @Serialize(GoalResponseDto)
   @Get()
-  getGoals(@Query() query: GetGoalsQueryDto, @Request() req) {
-    const userId = req.user.id;
+  async getGoals(@Query() query: GetGoalsQueryDto, @Request() req) {
+    const loggedUser = req.user;
+    const loggedUserId = req.user.id;
+    const isPsychologist = req.user.role === UserRole.PSICOLOGO;
+    const { userId: patientId } = query;
 
-    return this.goalsService.getGoals(userId, query);
+    if (patientId) {
+      const canAccess = await this.goalsService.canAccessGoals(
+        loggedUser,
+        patientId,
+      );
+
+      if (!canAccess) {
+        throw new ForbiddenException(
+          'Você não tem permissão para acessar esses dados.',
+        );
+      }
+    }
+
+    const targetUserId = isPsychologist && patientId ? patientId : loggedUserId;
+
+    return this.goalsService.getGoals(targetUserId, query);
   }
 
   @Get('summary/:userId')
