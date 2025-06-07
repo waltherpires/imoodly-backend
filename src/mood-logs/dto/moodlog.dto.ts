@@ -1,15 +1,21 @@
-import { Expose } from "class-transformer";
+import { Expose } from 'class-transformer';
 
 export class MoodLogDto {
-    @Expose()
-    title: string;
+  @Expose()
+  id: number;
 
-    @Expose()
-    description: string;
+  @Expose()
+  title: string;
 
-    @Expose()
-    createdAt: Date;
+  @Expose()
+  description: string;
 
-    @Expose()
-    emotions: string[];
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  emotions: string[];
+
+  @Expose()
+  userId: number;
 }

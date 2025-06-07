@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoodLog } from './mood-log.entity';
 import { Repository } from 'typeorm';
@@ -23,8 +27,6 @@ export class MoodLogsService {
   ) {}
 
   async getMonthlyEmotionSummary(userId: number) {
-    // todo: checar se usuario pode ver isso
-
     const data = await this.emotionRepo
       .createQueryBuilder('emotion')
       .leftJoin('emotion.moodLog', 'log')
@@ -64,6 +66,49 @@ export class MoodLogsService {
         [Emotion.CONFUSO]: item.confuso,
       },
     }));
+  }
+
+  async editMoodLog(
+    moodLogId: number,
+    editMoodLogDto: Partial<CreateMoodLogDto>,
+    loggedUserId: number,
+  ) {
+    const moodLog = await this.logRepo.findOne({
+      where: { id: moodLogId },
+      relations: ['user', 'emotions'],
+    });
+
+    if (!moodLog) {
+      throw new NotFoundException('Registro não encontrado');
+    }
+
+    if (moodLog.user.id !== loggedUserId) {
+      throw new UnauthorizedException(
+        'Você não tem permissão para editar este registro',
+      );
+    }
+
+    if (editMoodLogDto.title !== undefined) {
+      moodLog.title = editMoodLogDto.title;
+    }
+
+    if (editMoodLogDto.description !== undefined) {
+      moodLog.description = editMoodLogDto.description;
+    }
+
+    if (editMoodLogDto.emotions !== undefined) {
+      await this.emotionRepo.remove(moodLog.emotions);
+
+      const newEmotions = editMoodLogDto.emotions.map((emotion) =>
+        this.emotionRepo.create({ emotion }),
+      );
+
+      moodLog.emotions = newEmotions;
+    }
+
+    const updatedMoodLog = await this.logRepo.save(moodLog);
+
+    return updatedMoodLog;
   }
 
   async createMoodLog(userId: number, createMoodLogDto: CreateMoodLogDto) {
@@ -116,10 +161,12 @@ export class MoodLogsService {
 
     return moodLogs.map((moodlog) =>
       plainToInstance(MoodLogDto, {
+        id: moodlog.id,
         title: moodlog.title,
         description: moodlog.description,
         createdAt: moodlog.createdAt,
         tags: moodlog.emotions.map((e) => e.emotion),
+        userId: userId,
       }),
     );
   }
