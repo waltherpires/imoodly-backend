@@ -9,15 +9,9 @@ import {
 
 export class CreateGoalDto {
   @IsString()
-  @Matches(/^[\p{L}\p{N} '-,]*$/u, {
-    message: 'Não são permitidos caracteres especiais ou emojis',
-  })
   title: string;
 
   @IsString()
-  @Matches(/^[\p{L}\p{N} '-,]*$/u, {
-    message: 'Não são permitidos caracteres especiais ou emojis',
-  })
   description: string;
 
   @IsOptional()
