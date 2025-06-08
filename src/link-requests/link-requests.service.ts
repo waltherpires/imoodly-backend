@@ -24,7 +24,7 @@ export class LinkRequestsService {
     }
 
     const alreadyLinked = await this.getLinks(requesterId);
-    if (alreadyLinked) {
+    if (alreadyLinked.length > 0) {
       throw new ForbiddenException('Você já possui acompanhamento');
     }
 
