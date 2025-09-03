@@ -26,7 +26,7 @@ export class User {
   password: string;
 
   @Column({ type: 'date' })
-  birthdate: Date;
+  birthdate: string;
 
   @Column({ type: 'enum', enum: UserRole })
   role: UserRole;

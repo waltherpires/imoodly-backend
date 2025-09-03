@@ -1,0 +1,25 @@
+import { User } from 'src/users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+export enum EntityType {
+  GOAL = 'goal',
+  POST = 'post',
+}
+
+@Entity('comments')
+export class Comment {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  content: string;
+
+  @Column({ type: 'enum', enum: EntityType })
+  entityType: EntityType;
+
+  @Column()
+  entityId: number;
+
+  @ManyToOne(() => User)
+  user: User;
+}

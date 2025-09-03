@@ -1,9 +1,10 @@
 import { User } from "src/users/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum NotificationType {
     GOAL="goal",
     POST="post",
+    COMMENT="commment",
     LINK_REQUEST = "link_request",
     LINK_ACCEPTED = "link_accepted",
 }

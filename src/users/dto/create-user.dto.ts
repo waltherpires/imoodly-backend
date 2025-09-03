@@ -1,11 +1,9 @@
-import { Type } from 'class-transformer';
 import {
+  IsDateString,
   IsEmail,
   IsEnum,
   IsString,
   IsOptional,
-  IsISO8601,
-  IsDate,
   MinDate,
   MaxDate,
   Matches,
@@ -25,11 +23,11 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @Type(() => Date)
-  @IsDate()
+ 
+  @IsDateString()
   @MinDate(new Date('1910-01-01'))
   @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 18)))
-  birthdate: Date;
+  birthdate: string;
 
   @IsEnum(UserRole)
   role: UserRole;
