@@ -10,7 +10,6 @@ import { LinkRequestsModule } from './link-requests/link-requests.module';
 import { GoalsModule } from './goals/goals.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
 import { NotificationsModule } from './notifications/notifications.module';
-import { CatsModule } from './cats/cats.module';
 import { CommentsModule } from './comments/comments.module';
 
 @Module({
@@ -28,7 +27,6 @@ import { CommentsModule } from './comments/comments.module';
     LinkRequestsModule,
     GoalsModule,
     NotificationsModule,
-    CatsModule,
     CommentsModule
   ],
   controllers: [AppController],
