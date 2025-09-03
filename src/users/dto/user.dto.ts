@@ -11,5 +11,5 @@ export class UserDto {
     name: string;
 
     @Expose()
-    birthdate: Date;
+    birthdate: string;
 }
