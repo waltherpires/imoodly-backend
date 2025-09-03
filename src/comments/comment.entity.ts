@@ -1,5 +1,11 @@
 import { User } from 'src/users/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum EntityType {
   GOAL = 'goal',
@@ -22,4 +28,10 @@ export class Comment {
 
   @ManyToOne(() => User)
   user: User;
+
+  @Column({ default: false })
+  isRead: boolean;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }
