@@ -1,5 +1,5 @@
 import { User } from "src/users/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { MoodEmotion } from "./mood-emotion.entity";
 
 @Entity('mood_logs')
@@ -19,7 +19,7 @@ export class MoodLog {
     @CreateDateColumn({ name: 'created_at'})
     createdAt: Date;
 
-    @CreateDateColumn({ name: 'updated_at'})
+    @UpdateDateColumn({ name: 'updated_at'})
     updatedAt: Date;
 
     @OneToMany(() => MoodEmotion, (moodEmotion) => moodEmotion.moodLog, { cascade: true })
