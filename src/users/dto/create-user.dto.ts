@@ -10,6 +10,14 @@ import {
 } from 'class-validator';
 import { UserRole } from 'src/common/enums/enums';
 
+const MIN_BIRTHDATE = new Date('1910-01-01');
+const TODAY = new Date();
+const MAX_BIRTHDATE = new Date(
+  TODAY.getFullYear() - 18,
+  TODAY.getMonth(),
+  TODAY.getDate(),
+);
+
 export class CreateUserDto {
   @IsEmail()
   email: string;
@@ -23,10 +31,9 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
- 
   @IsDateString()
-  @MinDate(new Date('1910-01-01'))
-  @MaxDate(new Date(new Date().setFullYear(new Date().getFullYear() - 18)))
+  @MinDate(MIN_BIRTHDATE, { message: 'Data mínima: 01/01/1910' })
+  @MaxDate(MAX_BIRTHDATE, { message: 'Idade mínima: 18 anos' })
   birthdate: string;
 
   @IsEnum(UserRole)
