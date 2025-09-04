@@ -1,5 +1,5 @@
+import { Type } from 'class-transformer';
 import {
-  IsDateString,
   IsEmail,
   IsEnum,
   IsString,
@@ -7,6 +7,7 @@ import {
   MinDate,
   MaxDate,
   Matches,
+  IsDate,
 } from 'class-validator';
 import { UserRole } from 'src/common/enums/enums';
 
@@ -31,7 +32,8 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsDateString()
+  @Type(() => Date)
+  @IsDate()
   @MinDate(MIN_BIRTHDATE, { message: 'Data mínima: 01/01/1910' })
   @MaxDate(MAX_BIRTHDATE, { message: 'Idade mínima: 18 anos' })
   birthdate: string;
