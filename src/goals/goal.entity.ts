@@ -1,5 +1,5 @@
 import { User } from 'src/users/user.entity';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 
 export enum GoalStatus {
@@ -34,7 +34,7 @@ export class Goal {
     @CreateDateColumn({ name: 'created_at'})
     createdAt: Date;
 
-    @CreateDateColumn({ name: 'updated_at'})
+    @UpdateDateColumn({ name: 'updated_at'})
     updatedAt: Date;
 
     @Column({ type: 'timestamp', nullable: true })
