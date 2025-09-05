@@ -36,50 +36,80 @@ export class CommentsService {
       throw new NotFoundException('Usuário não existe');
     }
 
-    let ownerId: number;
-    if (createCommentDto.entityType === EntityType.POST) {
-      const post = await this.moodLogRepo.findOne({
-        where: { id: Number(createCommentDto.entityId) },
+    let entityOwnerId: number;
+    let entityType = createCommentDto.entityType;
+    let entityId = createCommentDto.entityId;
+    if (createCommentDto.parentId) {
+      const parent = await this.commentRepo.findOne({
+        where: { id: createCommentDto.parentId },
         relations: ['user'],
       });
-      if (!post) throw new NotFoundException('Postagem não foi encontrada!');
-      ownerId = post.user.id;
-    } else if (createCommentDto.entityType === EntityType.GOAL) {
-      const goal = await this.goalRepo.findOne({
-        where: { id: Number(createCommentDto.entityId) },
-        relations: ['user'],
+
+      if (!parent) {
+        throw new NotFoundException('Comentário principal não foi encontrado');
+      }
+
+      entityOwnerId = parent.user.id;
+      entityType = parent.entityType;
+      entityId = parent.entityId;
+
+      const reply = this.commentRepo.create({
+        content: createCommentDto.content,
+        user,
+        parent,
+        entityType,
+        entityId,
       });
-      if (!goal) throw new NotFoundException('Meta não foi encontrada!');
-      ownerId = goal.user.id;
+
+      return this.commentRepo.save(reply);
     } else {
-      throw new BadRequestException(
-        'Tipo de entidade inválido para comentário!',
+      if (entityType === EntityType.POST) {
+        const post = await this.moodLogRepo.findOne({
+          where: { id: entityId },
+          relations: ['user'],
+        });
+        if (!post) throw new NotFoundException('Postagem não foi encontrada!');
+        entityOwnerId = post.user.id;
+      } else if (entityType === EntityType.GOAL) {
+        const goal = await this.goalRepo.findOne({
+          where: { id: entityId },
+          relations: ['user'],
+        });
+        if (!goal) throw new NotFoundException('Meta não foi encontrada!');
+        entityOwnerId = goal.user.id;
+      } else {
+        throw new BadRequestException(
+          'Tipo de entidade inválido para comentário!',
+        );
+      }
+
+      const hasLink = await this.linkService.hasAcceptedLinkBetween(
+        userId,
+        entityOwnerId,
       );
+
+      if (!hasLink)
+        throw new ForbiddenException(
+          'Você não tem permissão para comentar aqui',
+        );
+
+      const comment = this.commentRepo.create({
+        entityId: Number(createCommentDto.entityId),
+        entityType: createCommentDto.entityType,
+        content: createCommentDto.content,
+        user: user,
+      });
+
+      return this.commentRepo.save(comment);
     }
-
-    const hasLink = await this.linkService.hasAcceptedLinkBetween(
-      userId,
-      ownerId,
-    );
-
-    if (!hasLink)
-      throw new ForbiddenException('Você não tem permissão para comentar aqui');
-
-    const comment = this.commentRepo.create({
-      entityId: Number(createCommentDto.entityId),
-      entityType: createCommentDto.entityType,
-      content: createCommentDto.content,
-      user: user,
-    });
-
-    return this.commentRepo.save(comment);
   }
 
   async getEntityComments(entityId: number): Promise<Comment[]> {
-    const where: any = { entityId: entityId };
+    const where: any = { entityId: entityId, parent: null };
 
     return this.commentRepo.find({
       where,
+      relations: ['replies', 'user', 'replies.user'],
       order: { createdAt: 'DESC' },
     });
   }

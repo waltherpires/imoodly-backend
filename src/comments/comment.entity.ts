@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -28,6 +29,12 @@ export class Comment {
 
   @ManyToOne(() => User)
   user: User;
+
+  @ManyToOne(() => Comment, (comment) => comment.replies, { nullable: true, onDelete: 'CASCADE' })
+  parent: Comment;
+
+  @OneToMany(() => Comment, (comment) => comment.parent, { cascade: true })
+  replies: Comment[];
 
   @Column({ default: false })
   isRead: boolean;

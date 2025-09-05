@@ -1,13 +1,18 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { EntityType } from '../comment.entity';
 
 export class CreateCommentDto {
   @IsEnum(EntityType)
   entityType: EntityType;
 
-  @IsString()
-  entityId: string;
+  @IsNumber()
+  entityId: number;
 
   @IsString()
+  @IsNotEmpty()
   content: string;
+
+  @IsOptional()
+  @IsNumber()
+  parentId?: number;
 }
