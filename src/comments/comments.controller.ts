@@ -4,12 +4,14 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { EntityType } from './comment.entity';
 
 @Controller('comments')
 @UseGuards(AuthGuard)
@@ -22,8 +24,11 @@ export class CommentsController {
     return this.commentsService.createComment(loggedUser.id, body);
   }
 
-  @Get(':entityId')
-  async getComments(@Param('entityId') entityId: string) {
-    return this.commentsService.getEntityComments(Number(entityId));
+  @Get()
+  async getComments(
+    @Query('entityId') entityId: string,
+    @Query('entityType') entityType: EntityType
+  ) {
+    return this.commentsService.getEntityComments(Number(entityId), entityType);
   }
 }

@@ -104,8 +104,8 @@ export class CommentsService {
     }
   }
 
-  async getEntityComments(entityId: number): Promise<Comment[]> {
-    const where: any = { entityId: entityId, parent: null };
+  async getEntityComments(entityId: number, entityType: EntityType): Promise<Comment[]> {
+    const where: any = { entityId: entityId, entityType: entityType, parent: null };
 
     return this.commentRepo.find({
       where,
@@ -114,9 +114,9 @@ export class CommentsService {
     });
   }
 
-  async markAsRead(commentId: number): Promise<Comment> {
+  async markAsRead(commentId: number, entityType: EntityType): Promise<Comment> {
     const comment = await this.commentRepo.findOneByOrFail({
-      id: commentId,
+      id: commentId
     });
     comment.isRead = true;
     return this.commentRepo.save(comment);
